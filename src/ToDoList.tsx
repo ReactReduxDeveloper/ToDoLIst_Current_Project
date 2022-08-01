@@ -10,13 +10,15 @@ export type MassiveObjectsType = {
     isDone: boolean
 }
 type PropsType = {
+    id: string
     title: string
-    Filter:FilterType
+    Filter: FilterType
     MassiveObjects: MassiveObjectsType[]
-    DeleteFunc: (id: string) => void
-    FilteredFunction: (value: FilterType) => void
-    AddTaskFunction: (Title: string) => void
-    ChangeCheckofTask: (id: string, isDone: boolean) => void
+    DeleteFunc: (id: string, todoListID: string) => void
+    FilteredFunction: (value: FilterType, todoListID: string) => void
+    AddTaskFunction: (title: string, todoListID: string) => void
+    ChangeCheckofTask: (id: string, isDone: boolean, todoListID: string) => void
+    RemoveTodoList: (todoListID: string) => void
 }
 
 export const ToDoList = (props: PropsType) => {
@@ -24,7 +26,7 @@ export const ToDoList = (props: PropsType) => {
     let [Error, SetError] = useState<string | null>(null)
     const AddFunc = () => {
         if (Title.trim() !== '') {
-            props.AddTaskFunction(Title.trim())
+            props.AddTaskFunction(Title.trim(), props.id)
             SetTitle("")
         } else {
             SetError("Title is Required")
@@ -41,18 +43,24 @@ export const ToDoList = (props: PropsType) => {
         }
     }
     const AllHandler = () => {
-        props.FilteredFunction("All")
+        props.FilteredFunction("All", props.id)
     }
     const ActiveHandler = () => {
-        props.FilteredFunction("Active")
+        props.FilteredFunction("Active", props.id)
     }
     const CompletedHandler = () => {
-        props.FilteredFunction("Completed")
+        props.FilteredFunction("Completed", props.id)
     }
+    const RemoveToDoList = ()=> {props.RemoveTodoList(props.id)}
     return (
         <div className="App">
             <div>
-                <h3>{props.title}</h3>
+                <h3>
+                    {props.title}
+                    <button onClick={RemoveToDoList}>X</button>
+
+                </h3>
+
                 <div>
                     <input value={Title}
                            onChange={onChangeHandler}
@@ -65,13 +73,13 @@ export const ToDoList = (props: PropsType) => {
                 <ul>
                     {props.MassiveObjects.map((el) => {
                         const ButtonHandler = () => {
-                            props.DeleteFunc(el.id)
+                            props.DeleteFunc(el.id,props.id)
                         }
                         return (
 
                             <li key={el.id} className={el.isDone ? "is-done" : ''}>
                                 <input type="checkbox" checked={el.isDone} onChange={(event) => {
-                                    props.ChangeCheckofTask(el.id, event.currentTarget.checked)
+                                    props.ChangeCheckofTask(el.id, event.currentTarget.checked, props.id)
                                 }}/>
                                 <span>{el.title}</span>
                                 <button onClick={ButtonHandler}> ✖
@@ -85,7 +93,8 @@ export const ToDoList = (props: PropsType) => {
                     </button>
                     <button className={props.Filter === "Active" ? "active-filter" : ''} onClick={ActiveHandler}>Active
                     </button>
-                    <button className={props.Filter === "Completed" ? "active-filter" : ''} onClick={CompletedHandler}>Completed
+                    <button className={props.Filter === "Completed" ? "active-filter" : ''}
+                            onClick={CompletedHandler}>Completed
                     </button>
                 </div>
             </div>

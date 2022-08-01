@@ -9,51 +9,75 @@ export type ToDoListsType = {
     title: string
     Filter: FilterType
 }
+export type TaskStateType = {
+    [todoListID: string]: MassiveObjectsType[]
+}
 
 function App() {
+    let todolistID1 = v1()
+    let todolistID2 = v1()
+
     let [ToDoLists, SetTodoLists] = useState<ToDoListsType[]>(
         [
-            {id: v1(), title: "What to Learn", Filter: "All"},
-            {id: v1(), title: "What to Buy", Filter: "All"},
+            {id: todolistID1, title: "What to Learn", Filter: "All"},
+            {id: todolistID2, title: "What to Buy", Filter: "All"},
         ]
     )
-    let [Tasks, SetTasks] = useState<MassiveObjectsType[]>([
-        {id: v1(), title: "HTML", isDone: true},
-        {id: v1(), title: "Css", isDone: false},
-        {id: v1(), title: "React", isDone: true},
-        {id: v1(), title: "SQL", isDone: true},
-        {id: v1(), title: "Boosty", isDone: true}
-    ])
+    let [Tasks, SetTasks] = useState<TaskStateType>({
+        [todolistID1]: [
+            {id: v1(), title: "HTML", isDone: true},
+            {id: v1(), title: "Css", isDone: false},
+            {id: v1(), title: "React", isDone: true}],
+        [todolistID2]: [
+            {id: v1(), title: "MILK", isDone: true},
+            {id: v1(), title: "Bread", isDone: false},
+        ]
+    })
 
-    const DeleteFunc = (id: string) => {
-        const FilteredTasks = Tasks.filter(el => el.id !== id)
-        SetTasks(FilteredTasks)
+    const DeleteFunc = (id: string, todoListID: string) => {
+        /* let currentTasks = Tasks[todoListID]
+         const filteredTasks = currentTasks.filter(el => el.id !== id)
+         Tasks[todoListID] = filteredTasks
+         const copyTasks = {...Tasks}
+         SetTasks(copyTasks)*/
+        SetTasks({...Tasks, [todoListID]: Tasks[todoListID].filter(el => el.id !== id)})
     }
-    const FilteredFunction = (value: FilterType) => {
-        SetFilter(value)
+    const FilteredFunction = (value: FilterType, todoListID: string) => {
+       /* let todolist = ToDoLists.find(tl => tl.id = todolistID);
+        if (todolist) {
+            todolist.Filter = value
+            SetTodoLists([...ToDoLists])
+        }*/
+        SetTodoLists(ToDoLists.map(el=>el.id === todoListID ? {...el,Filter:value} : el))
     }
-    const AddTaskFunction = (Title: string) => {
-        let Task = {id: v1(), title: Title, isDone: false}
-        let NewTasks = [Task, ...Tasks]
-        SetTasks(NewTasks)
-
+    const AddTaskFunction = (title: string, todoListID: string) => {
+        /*const currentTasks = Tasks[todoListID]
+        const updatedTasks = [{id: v1(), title, isDone: false},...currentTasks]
+        const copyTasks = {...Tasks}
+        copyTasks[todoListID] = updatedTasks
+        SetTasks(copyTasks)*/
+        SetTasks({...Tasks, [todoListID]: [{id: v1(), title, isDone: false}, ...Tasks[todoListID]]})
     }
-    const ChangeCheckofTask = (id: string, isDone: boolean) => {
-        SetTasks(Tasks.map(el => el.id === id ? {...el, isDone} : el))
+    const ChangeCheckofTask = (id: string, isDone: boolean, todoListID: string) => {
+        SetTasks({...Tasks,[todoListID]:Tasks[todoListID].map(el=>el.id === id ? {...el,isDone} : el)})
+    }
+    const RemoveTodoList = (todoListID: string)=> {
+        SetTodoLists(ToDoLists.filter(el=>el.id !== todoListID))
+        delete Tasks[todoListID]
     }
     return (
         <div className={"App"}>
             {ToDoLists.map(todolist => {
-                let [Filter, SetFilter] = useState<FilterType>("All")
-                let TasksForTodolist = Tasks
-                if (Filter === "Active") {
-                    TasksForTodolist = Tasks.filter(el => !el.isDone)
+                let TasksForTodolist = Tasks[todolist.id]
+                if (todolist.Filter === "Active") {
+                    TasksForTodolist = Tasks[todolist.id].filter(el => !el.isDone)
                 }
-                if (Filter === "Completed") {
-                    TasksForTodolist = Tasks.filter(el => el.isDone)
+                if (todolist.Filter === "Completed") {
+                    TasksForTodolist = Tasks[todolist.id].filter(el => el.isDone)
                 }
                 return <ToDoList
                     key={todolist.id}
+                    id={todolist.id}
                     title={todolist.title}
                     MassiveObjects={TasksForTodolist}
                     DeleteFunc={DeleteFunc}
@@ -61,6 +85,7 @@ function App() {
                     AddTaskFunction={AddTaskFunction}
                     ChangeCheckofTask={ChangeCheckofTask}
                     Filter={todolist.Filter}
+                    RemoveTodoList={RemoveTodoList}
 
                 />
             })}

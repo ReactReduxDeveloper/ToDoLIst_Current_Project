@@ -15,6 +15,7 @@
 }
 .active-filter {
   background-color: darkmagenta;
+  color:darkgreen;
 }
 .is-done {
   opacity: 0.5;
