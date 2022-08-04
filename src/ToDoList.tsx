@@ -77,9 +77,9 @@ export const ToDoList = (props: PropsType) => {
 
                             <li key={el.id} className={el.isDone ? "is-done" : ''}>
                                 <Checkbox
-                                size={"small"}
-                                color={"primary"}
-                                checked={el.isDone} onChange={changeTaskStatus}
+                                    size={"small"}
+                                    color={"primary"}
+                                    checked={el.isDone} onChange={changeTaskStatus}
                                 />
                                 <EditableSpan title={el.title} changeTitle={changeTaskTitle}/>
                                 <IconButton onClick={ButtonHandler}>

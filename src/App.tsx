@@ -6,26 +6,27 @@ import {AddItemForm} from "./AddItemForm";
 import {AppBar, Button, Container, Grid, IconButton, Paper, Toolbar, Typography, useTheme} from "@material-ui/core";
 import {Menu} from "@material-ui/icons";
 
+
 export type FilterType = "All" | "Active" | "Completed"
 export type ToDoListsType = {
     id: string
     title: string
-    Filter: FilterType
+    filter: FilterType
 }
 export type TaskStateType = {
     [todoListID: string]: MassiveObjectsType[]
 }
 
 function App() {
-    const theme = useTheme()
-    console.log(theme)
+
+
     let todolistID1 = v1()
     let todolistID2 = v1()
 
     let [ToDoLists, SetTodoLists] = useState<ToDoListsType[]>(
         [
-            {id: todolistID1, title: "What to Learn", Filter: "All"},
-            {id: todolistID2, title: "What to Buy", Filter: "All"},
+            {id: todolistID1, title: "What to Learn", filter: "All"},
+            {id: todolistID2, title: "What to Buy", filter: "All"},
         ]
     )
     let [Tasks, SetTasks] = useState<TaskStateType>({
@@ -47,17 +48,7 @@ function App() {
          SetTasks(copyTasks)*/
         SetTasks({...Tasks, [todoListID]: Tasks[todoListID].filter(el => el.id !== id)})
     }
-    const FilteredFunction = (value: FilterType, todoListID: string) => {
-        /* let todolist = ToDoLists.find(tl => tl.id = todolistID);
-         if (todolist) {
-             todolist.Filter = value
-             SetTodoLists([...ToDoLists])
-         }*/
-        SetTodoLists(ToDoLists.map(el => el.id === todoListID ? {...el, Filter: value} : el))
-    }
-    const changeToDoListTitle = (title: string, todoListID: string) => {
-        SetTodoLists(ToDoLists.map(el => el.id === todoListID ? {...el, title} : el))
-    }
+
     const AddTaskFunction = (title: string, todoListID: string) => {
         /*const currentTasks = Tasks[todoListID]
         const updatedTasks = [{id: v1(), title, isDone: false},...currentTasks]
@@ -72,6 +63,17 @@ function App() {
     const ChangeTaskTitle = (id: string, title: string, todoListID: string) => {
         SetTasks({...Tasks, [todoListID]: Tasks[todoListID].map(el => el.id === id ? {...el, title} : el)})
     }
+    const FilteredFunction = (value: FilterType, todoListID: string) => {
+        /* let todolist = ToDoLists.find(tl => tl.id = todolistID);
+         if (todolist) {
+             todolist.Filter = value
+             SetTodoLists([...ToDoLists])
+         }*/
+        SetTodoLists(ToDoLists.map(el => el.id === todoListID ? {...el, filter: value} : el))
+    }
+    const changeToDoListTitle = (title: string, todoListID: string) => {
+        SetTodoLists(ToDoLists.map(el => el.id === todoListID ? {...el, title} : el))
+    }
     const RemoveTodoList = (todoListID: string) => {
         SetTodoLists(ToDoLists.filter(el => el.id !== todoListID))
         delete Tasks[todoListID]
@@ -81,12 +83,13 @@ function App() {
         const newTodoList: ToDoListsType = {
             id: newTodoListID,
             title,
-            Filter: "All"
+            filter: "All"
         }
         SetTodoLists([...ToDoLists, newTodoList])
         SetTasks({...Tasks, [newTodoListID]: []})
     }
     return (
+
         <div className={"App"}>
             <AppBar position={'static'}>
                 <Toolbar style={{justifyContent: "space-between"}}>
@@ -106,10 +109,10 @@ function App() {
                 <Grid container spacing={4}>
                     {ToDoLists.map(todolist => {
                         let TasksForTodolist = Tasks[todolist.id]
-                        if (todolist.Filter === "Active") {
+                        if (todolist.filter === "Active") {
                             TasksForTodolist = Tasks[todolist.id].filter(el => !el.isDone)
                         }
-                        if (todolist.Filter === "Completed") {
+                        if (todolist.filter === "Completed") {
                             TasksForTodolist = Tasks[todolist.id].filter(el => el.isDone)
                         }
                         return (<Grid item key={todolist.id}>
@@ -123,7 +126,7 @@ function App() {
                                     FilteredFunction={FilteredFunction}
                                     AddTaskFunction={AddTaskFunction}
                                     ChangeCheckofTask={ChangeCheckofTask}
-                                    Filter={todolist.Filter}
+                                    Filter={todolist.filter}
                                     RemoveTodoList={RemoveTodoList}
                                     ChangeTaskTitle={ChangeTaskTitle}
                                     changeToDoListTitle={changeToDoListTitle}
