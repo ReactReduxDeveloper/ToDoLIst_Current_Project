@@ -5,6 +5,11 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import {createTheme, CssBaseline, ThemeProvider} from "@material-ui/core";
 import {teal, yellow} from "@material-ui/core/colors";
+import AppWithReducer from "./AppWithReducer";
+import AppWithRedux from "./AppWithRedux";
+import {CacheProvider} from "@emotion/react";
+import {Provider} from "react-redux";
+import {store} from "./reducers/store";
 
 
 const theme = createTheme({
@@ -17,7 +22,9 @@ const theme = createTheme({
 ReactDOM.render(
     <ThemeProvider theme={theme}>
         <CssBaseline/>
-        <App/>
+       <Provider store={store}>
+        <AppWithRedux/>
+       </Provider>
     </ThemeProvider>
     , document.getElementById('root')
 );
